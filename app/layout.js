@@ -1,8 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-
-const inter = Inter({ subsets: ["latin"] }); 
+import { ConvexClientProvider } from "@/components/convex-client-provider";
+import { ClerkProvider } from "@clerk/nextjs";
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Splitzy",
@@ -22,10 +23,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter}`}
       >
-        <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <ClerkProvider>
+          <ConvexClientProvider>
+            <Header />
+            <main className="min-h-screen">
+              {children}
+            </main>
+          </ConvexClientProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
