@@ -14,6 +14,7 @@ export const metadata = {
 };
 
 import Footer from "@/components/footer";
+import { Toaster } from "sonner";
 
 export default function RootLayout({ children }) {
   return (
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
             <Header />
             <main className="min-h-screen">
               {children}
+              <Toaster richColors /> 
             </main>
             <Footer />
           </ConvexClientProvider>
