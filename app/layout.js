@@ -13,6 +13,8 @@ export const metadata = {
   },
 };
 
+import Footer from "@/components/footer";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -29,6 +31,7 @@ export default function RootLayout({ children }) {
             <main className="min-h-screen">
               {children}
             </main>
+            <Footer />
           </ConvexClientProvider>
         </ClerkProvider>
       </body>
