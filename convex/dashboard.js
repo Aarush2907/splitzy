@@ -15,28 +15,6 @@ export const getUserBalances = query({
           e.splits.some((s) => s.userId === user._id))
     );
 
-    /* tallies */
-    let youOwe = 0;
-    let youAreOwed = 0;
-    const balanceByUser = {};
-
-    for (const e of expenses) {
-      const isPayer = e.paidByUserId === user._id;
-      const mySplit = e.splits.find((s) => s.userId === user._id);
-
-      if (isPayer) {
-        for (const s of e.splits) {
-          if (s.userId === user._id || s.paid) continue;
-          youAreOwed += s.amount;
-          (balanceByUser[s.userId] ??= { owed: 0, owing: 0 }).owed += s.amount;
-        }
-      } else if (mySplit && !mySplit.paid) {
-        youOwe += mySplit.amount;
-        (balanceByUser[e.paidByUserId] ??= { owed: 0, owing: 0 }).owing +=
-          mySplit.amount;
-      }
-    }
-
     /* ───────────── 1‑to‑1 settlements (no groupId) ───────────── */
     const settlements = (await ctx.db.query("settlements").collect()).filter(
       (s) =>
@@ -44,24 +22,50 @@ export const getUserBalances = query({
         (s.paidByUserId === user._id || s.receivedByUserId === user._id)
     );
 
+    // Calculate net balance per user
+    // Positive = They owe me
+    // Negative = I owe them
+    const netBalances = {};
+
+    // Process expenses
+    for (const e of expenses) {
+      const isPayer = e.paidByUserId === user._id;
+      
+      if (isPayer) {
+        // I paid, so others owe me
+        for (const s of e.splits) {
+          if (s.userId === user._id || s.paid) continue;
+          netBalances[s.userId] = (netBalances[s.userId] || 0) + s.amount;
+        }
+      } else {
+        // Someone else paid, I might owe them
+        const mySplit = e.splits.find((s) => s.userId === user._id);
+        if (mySplit && !mySplit.paid) {
+          netBalances[e.paidByUserId] = (netBalances[e.paidByUserId] || 0) - mySplit.amount;
+        }
+      }
+    }
+
+    // Process settlements
     for (const s of settlements) {
       if (s.paidByUserId === user._id) {
-        youOwe -= s.amount;
-        (balanceByUser[s.receivedByUserId] ??= { owed: 0, owing: 0 }).owing -=
-          s.amount;
+        // I paid them -> balance increases (they owe me more / I owe them less)
+        netBalances[s.receivedByUserId] = (netBalances[s.receivedByUserId] || 0) + s.amount;
       } else {
-        youAreOwed -= s.amount;
-        (balanceByUser[s.paidByUserId] ??= { owed: 0, owing: 0 }).owed -=
-          s.amount;
+        // They paid me -> balance decreases (they owe me less / I owe them more)
+        netBalances[s.paidByUserId] = (netBalances[s.paidByUserId] || 0) - s.amount;
       }
     }
 
     /* build lists for UI */
+    let youOwe = 0;
+    let youAreOwed = 0;
     const youOweList = [];
     const youAreOwedByList = [];
-    for (const [uid, { owed, owing }] of Object.entries(balanceByUser)) {
-      const net = owed - owing;
-      if (net === 0) continue;
+
+    for (const [uid, net] of Object.entries(netBalances)) {
+      if (Math.abs(net) < 0.01) continue; // Skip settled/zero balances
+
       const counterpart = await ctx.db.get(uid);
       const base = {
         userId: uid,
@@ -69,7 +73,14 @@ export const getUserBalances = query({
         imageUrl: counterpart?.imageUrl,
         amount: Math.abs(net),
       };
-      net > 0 ? youAreOwedByList.push(base) : youOweList.push(base);
+
+      if (net > 0) {
+        youAreOwed += net;
+        youAreOwedByList.push(base);
+      } else {
+        youOwe += Math.abs(net);
+        youOweList.push(base);
+      }
     }
 
     youOweList.sort((a, b) => b.amount - a.amount);

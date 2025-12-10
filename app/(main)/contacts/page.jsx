@@ -131,7 +131,7 @@ export default function ContactsPage() {
           ) : (
             <div className="flex flex-col gap-3">
               {groups.map((group) => (
-                <Link key={group.id} href={`/groups/${group.id}`} className="group block">
+                <Link key={group.id} href={`/group/${group.id}`} className="group block">
                   <Card className="hover:shadow-md transition-all duration-300 border-transparent hover:border-primary/20 bg-card/50 hover:bg-card">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
@@ -162,7 +162,7 @@ export default function ContactsPage() {
         isOpen={isCreateGroupModalOpen}
         onClose={() => setIsCreateGroupModalOpen(false)}
         onSuccess={(groupId) => {
-          router.push(`/groups/${groupId}`);
+          router.push(`/group/${groupId}`);
         }}
       />
     </div>

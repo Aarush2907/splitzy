@@ -48,7 +48,7 @@ export default function PersonExpensesPage() {
           variant="ghost"
           size="sm"
           className="absolute top-4 left-4 sm:top-6 sm:left-6 hover:bg-background/50"
-          onClick={() => router.back()}
+          onClick={() => router.push('/contacts')}
         >
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
