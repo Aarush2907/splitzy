@@ -2,13 +2,13 @@
 import { mutation } from "./_generated/server";
 
 /**
- * Seed database with dummy data using your existing users
+ * Seed database with Indian-themed dummy data using your existing users
  * Run with: npx convex run seed:seedDatabase
  */
 export const seedDatabase = mutation({
   args: {},
   handler: async (ctx) => {
-    // Check if database already has data to avoid duplicate seeding
+    // Check if database already has expenses to avoid duplicate seeding
     const existingExpenses = await ctx.db.query("expenses").collect();
     if (existingExpenses.length > 0) {
       console.log("Database already has expenses. Skipping seed.");
@@ -66,15 +66,14 @@ export const seedDatabase = mutation({
 async function createGroups(ctx, users) {
   const now = Date.now();
 
-  // Using the users from your database
   const user1 = users[0]; 
   const user2 = users[1]; 
   const user3 = users[2]; 
 
   const groupDatas = [
     {
-      name: "Weekend Trip",
-      description: "Expenses for our weekend getaway",
+      name: "Goa Trip 🌴",
+      description: "Annual friends trip to Goa",
       createdBy: user1._id,
       members: [
         { userId: user1._id, role: "admin", joinedAt: now },
@@ -83,8 +82,8 @@ async function createGroups(ctx, users) {
       ],
     },
     {
-      name: "Office Expenses",
-      description: "Shared expenses for our office",
+      name: "Bangalore Flat 🏠",
+      description: "Rent, electricity, and maid salary",
       createdBy: user2._id,
       members: [
         { userId: user2._id, role: "admin", joinedAt: now },
@@ -92,8 +91,8 @@ async function createGroups(ctx, users) {
       ],
     },
     {
-      name: "Project Alpha",
-      description: "Expenses for our project",
+      name: "Diwali Party 🪔",
+      description: "Expenses for the house party",
       createdBy: user3._id,
       members: [
         { userId: user3._id, role: "admin", joinedAt: now },
@@ -109,7 +108,6 @@ async function createGroups(ctx, users) {
     groupIds.push(groupId);
   }
 
-  // Fetch all groups with their IDs
   return await Promise.all(
     groupIds.map(async (id) => {
       const group = await ctx.db.get(id);
@@ -125,74 +123,73 @@ async function createOneOnOneExpenses(ctx, users) {
   const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;
   const oneMonthAgo = now - 30 * 24 * 60 * 60 * 1000;
 
-  // Using the users from your database
   const user1 = users[0];
   const user2 = users[1];
   const user3 = users[2];
 
   const expenseDatas = [
     {
-      description: "Dinner at Indian Restaurant",
-      amount: 1250.0,
-      category: "foodDrink", // Using ID from expense-categories.js
+      description: "Dinner at Paradise Biryani",
+      amount: 1450.0,
+      category: "food",
       date: twoWeeksAgo,
       paidByUserId: user1._id,
       splitType: "equal",
       splits: [
-        { userId: user1._id, amount: 625.0, paid: true },
-        { userId: user2._id, amount: 625.0, paid: false },
+        { userId: user1._id, amount: 725.0, paid: true },
+        { userId: user2._id, amount: 725.0, paid: false },
       ],
       createdBy: user1._id,
     },
     {
-      description: "Cab ride to airport",
-      amount: 450.0,
-      category: "transportation", 
+      description: "Uber to Airport",
+      amount: 850.0,
+      category: "transport", 
       date: oneWeekAgo,
       paidByUserId: user2._id,
       splitType: "equal",
       splits: [
-        { userId: user1._id, amount: 225.0, paid: false },
-        { userId: user2._id, amount: 225.0, paid: true },
+        { userId: user1._id, amount: 425.0, paid: false },
+        { userId: user2._id, amount: 425.0, paid: true },
       ],
       createdBy: user2._id,
     },
     {
-      description: "Movie tickets",
-      amount: 500.0,
+      description: "Movie tickets (Jawan)",
+      amount: 900.0,
       category: "entertainment",
       date: oneWeekAgo + 2 * 24 * 60 * 60 * 1000,
       paidByUserId: user3._id,
       splitType: "equal",
       splits: [
-        { userId: user2._id, amount: 250.0, paid: false },
-        { userId: user3._id, amount: 250.0, paid: true },
+        { userId: user2._id, amount: 450.0, paid: false },
+        { userId: user3._id, amount: 450.0, paid: true },
       ],
       createdBy: user3._id,
     },
     {
-      description: "Groceries",
-      amount: 1875.5,
-      category: "groceries",
+      description: "Groceries from Blinkit",
+      amount: 2150.0,
+      category: "shopping",
       date: oneMonthAgo,
       paidByUserId: user1._id,
       splitType: "percentage",
       splits: [
-        { userId: user1._id, amount: 1312.85, paid: true }, // 70%
-        { userId: user3._id, amount: 562.65, paid: false }, // 30%
+        { userId: user1._id, amount: 1505.0, paid: true }, // 70%
+        { userId: user3._id, amount: 645.0, paid: false }, // 30%
       ],
       createdBy: user1._id,
     },
     {
-      description: "Internet bill",
-      amount: 1200.0,
+      description: "JioFiber Bill",
+      amount: 1178.0,
       category: "utilities",
       date: now - 3 * 24 * 60 * 60 * 1000,
       paidByUserId: user2._id,
       splitType: "equal",
       splits: [
-        { userId: user2._id, amount: 600.0, paid: true },
-        { userId: user3._id, amount: 600.0, paid: false },
+        { userId: user2._id, amount: 589.0, paid: true },
+        { userId: user3._id, amount: 589.0, paid: false },
       ],
       createdBy: user2._id,
     },
@@ -204,7 +201,6 @@ async function createOneOnOneExpenses(ctx, users) {
     expenseIds.push(expenseId);
   }
 
-  // Fetch all expenses with their IDs
   return await Promise.all(
     expenseIds.map(async (id) => {
       const expense = await ctx.db.get(id);
@@ -216,51 +212,86 @@ async function createOneOnOneExpenses(ctx, users) {
 // Helper to create group expenses
 async function createGroupExpenses(ctx, users, groups) {
   const now = Date.now();
-  const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
   const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;
 
-  // Using the users from your database
   const user1 = users[0];
   const user2 = users[1];
   const user3 = users[2];
 
-  // Weekend Trip Group Expenses
-  const weekendTripExpenses = [
+  // Goa Trip Expenses
+  const goaExpenses = [
     {
-      description: "Hotel reservation",
-      amount: 9500.0,
+      description: "Villa Rental (3 nights)",
+      amount: 25000.0,
       category: "housing",
       date: twoWeeksAgo,
       paidByUserId: user1._id,
       splitType: "equal",
       splits: [
-        { userId: user1._id, amount: 3166.67, paid: true },
-        { userId: user2._id, amount: 3166.67, paid: false },
-        { userId: user3._id, amount: 3166.66, paid: false },
+        { userId: user1._id, amount: 8333.34, paid: true },
+        { userId: user2._id, amount: 8333.33, paid: false },
+        { userId: user3._id, amount: 8333.33, paid: false },
       ],
-      groupId: groups[0]._id, // Weekend Trip Group
+      groupId: groups[0]._id, // Goa Trip
       createdBy: user1._id,
     },
     {
-      description: "Groceries for weekend",
-      amount: 2450.75,
-      category: "groceries",
+      description: "Drinks & Snacks",
+      amount: 5400.0,
+      category: "food",
       date: twoWeeksAgo + 1 * 24 * 60 * 60 * 1000,
       paidByUserId: user2._id,
       splitType: "equal",
       splits: [
-        { userId: user1._id, amount: 816.92, paid: false },
-        { userId: user2._id, amount: 816.92, paid: true },
-        { userId: user3._id, amount: 816.91, paid: false },
+        { userId: user1._id, amount: 1800.0, paid: false },
+        { userId: user2._id, amount: 1800.0, paid: true },
+        { userId: user3._id, amount: 1800.0, paid: false },
       ],
-      groupId: groups[0]._id, // Weekend Trip Group
+      groupId: groups[0]._id, // Goa Trip
       createdBy: user2._id,
     },
     {
-      description: "Sight-seeing tour",
-      amount: 4500.0,
+      description: "Water Sports",
+      amount: 6000.0,
       category: "entertainment",
       date: twoWeeksAgo + 2 * 24 * 60 * 60 * 1000,
+      paidByUserId: user3._id,
+      splitType: "equal",
+      splits: [
+        { userId: user1._id, amount: 2000.0, paid: false },
+        { userId: user2._id, amount: 2000.0, paid: false },
+        { userId: user3._id, amount: 2000.0, paid: true },
+      ],
+      groupId: groups[0]._id, // Goa Trip
+      createdBy: user3._id,
+    },
+  ];
+
+  // Bangalore Flat Expenses
+  const flatExpenses = [
+    {
+      description: "Maid Salary",
+      amount: 3000.0,
+      category: "housing",
+      date: now - 7 * 24 * 60 * 60 * 1000,
+      paidByUserId: user2._id,
+      splitType: "equal",
+      splits: [
+        { userId: user2._id, amount: 1500.0, paid: true },
+        { userId: user3._id, amount: 1500.0, paid: false },
+      ],
+      groupId: groups[1]._id, // Bangalore Flat
+      createdBy: user2._id,
+    },
+  ];
+
+  // Diwali Party
+  const diwaliExpenses = [
+    {
+      description: "Sweets & Decor",
+      amount: 4500.0,
+      category: "shopping",
+      date: now - 5 * 24 * 60 * 60 * 1000,
       paidByUserId: user3._id,
       splitType: "equal",
       splits: [
@@ -268,98 +299,12 @@ async function createGroupExpenses(ctx, users, groups) {
         { userId: user2._id, amount: 1500.0, paid: false },
         { userId: user3._id, amount: 1500.0, paid: true },
       ],
-      groupId: groups[0]._id, // Weekend Trip Group
+      groupId: groups[2]._id, // Diwali Party
       createdBy: user3._id,
     },
   ];
 
-  // Office Expenses
-  const officeExpenses = [
-    {
-      description: "Coffee and snacks",
-      amount: 850.0,
-      category: "coffee",
-      date: oneWeekAgo,
-      paidByUserId: user2._id,
-      splitType: "equal",
-      splits: [
-        { userId: user2._id, amount: 425.0, paid: true },
-        { userId: user3._id, amount: 425.0, paid: false },
-      ],
-      groupId: groups[1]._id, // Office Expenses Group
-      createdBy: user2._id,
-    },
-    {
-      description: "Office supplies",
-      amount: 1250.4,
-      category: "shopping",
-      date: oneWeekAgo + 2 * 24 * 60 * 60 * 1000,
-      paidByUserId: user3._id,
-      splitType: "equal",
-      splits: [
-        { userId: user2._id, amount: 625.2, paid: false },
-        { userId: user3._id, amount: 625.2, paid: true },
-      ],
-      groupId: groups[1]._id, // Office Expenses Group
-      createdBy: user3._id,
-    },
-  ];
-
-  // Project Alpha Expenses
-  const projectExpenses = [
-    {
-      description: "Domain purchase",
-      amount: 1200.0,
-      category: "technology",
-      date: now - 5 * 24 * 60 * 60 * 1000,
-      paidByUserId: user3._id,
-      splitType: "equal",
-      splits: [
-        { userId: user1._id, amount: 400.0, paid: false },
-        { userId: user2._id, amount: 400.0, paid: false },
-        { userId: user3._id, amount: 400.0, paid: true },
-      ],
-      groupId: groups[2]._id, // Project Alpha Group
-      createdBy: user3._id,
-    },
-    {
-      description: "Server hosting",
-      amount: 3600.0,
-      category: "bills",
-      date: now - 4 * 24 * 60 * 60 * 1000,
-      paidByUserId: user1._id,
-      splitType: "equal",
-      splits: [
-        { userId: user1._id, amount: 1200.0, paid: true },
-        { userId: user2._id, amount: 1200.0, paid: false },
-        { userId: user3._id, amount: 1200.0, paid: false },
-      ],
-      groupId: groups[2]._id, // Project Alpha Group
-      createdBy: user1._id,
-    },
-    {
-      description: "Project dinner",
-      amount: 4800.6,
-      category: "foodDrink",
-      date: now - 2 * 24 * 60 * 60 * 1000,
-      paidByUserId: user2._id,
-      splitType: "percentage",
-      splits: [
-        { userId: user1._id, amount: 1600.2, paid: false }, // 33.33%
-        { userId: user2._id, amount: 1600.2, paid: true }, // 33.33%
-        { userId: user3._id, amount: 1600.2, paid: false }, // 33.33%
-      ],
-      groupId: groups[2]._id, // Project Alpha Group
-      createdBy: user2._id,
-    },
-  ];
-
-  // Combine all group expenses
-  const allGroupExpenses = [
-    ...weekendTripExpenses,
-    ...officeExpenses,
-    ...projectExpenses,
-  ];
+  const allGroupExpenses = [...goaExpenses, ...flatExpenses, ...diwaliExpenses];
 
   const expenseIds = [];
   for (const expenseData of allGroupExpenses) {
@@ -367,7 +312,6 @@ async function createGroupExpenses(ctx, users, groups) {
     expenseIds.push(expenseId);
   }
 
-  // Fetch all group expenses with their IDs
   return await Promise.all(
     expenseIds.map(async (id) => {
       const expense = await ctx.db.get(id);
@@ -386,59 +330,28 @@ async function createSettlements(
 ) {
   const now = Date.now();
   const threeDaysAgo = now - 3 * 24 * 60 * 60 * 1000;
-  const fiveDaysAgo = now - 5 * 24 * 60 * 60 * 1000;
 
-  // Using the users from your database
   const user1 = users[0];
   const user2 = users[1];
   const user3 = users[2];
 
-  // Find a one-on-one expense to settle
-  const cabExpense = oneOnOneExpenses.find(
-    (expense) => expense.description === "Cab ride to airport"
-  );
-
-  // Find some group expenses to settle
-  const hotelExpense = groupExpenses.find(
-    (expense) => expense.description === "Hotel reservation"
-  );
-
-  const coffeeExpense = groupExpenses.find(
-    (expense) => expense.description === "Coffee and snacks"
-  );
-
   const settlementDatas = [
-    // Settlement for cab ride
     {
-      amount: 225.0, // Amount user1 owes to user2
-      note: "For cab ride",
-      date: fiveDaysAgo,
-      paidByUserId: user1._id, // User1 pays
-      receivedByUserId: user2._id, // User2 receives
-      relatedExpenseIds: cabExpense ? [cabExpense._id] : undefined,
+      amount: 425.0, 
+      note: "Uber payment",
+      date: now - 4 * 24 * 60 * 60 * 1000,
+      paidByUserId: user1._id, 
+      receivedByUserId: user2._id, 
       createdBy: user1._id,
     },
-    // Settlement for hotel
     {
-      amount: 3166.67, // Amount user2 owes to user1
-      note: "Hotel payment",
+      amount: 5000.0, 
+      note: "Part of Villa rental",
       date: threeDaysAgo,
-      paidByUserId: user2._id, // User2 pays
-      receivedByUserId: user1._id, // User1 receives
-      groupId: groups[0]._id, // Weekend Trip Group
-      relatedExpenseIds: hotelExpense ? [hotelExpense._id] : undefined,
+      paidByUserId: user2._id, 
+      receivedByUserId: user1._id, 
+      groupId: groups[0]._id, // Goa Trip
       createdBy: user2._id,
-    },
-    // Settlement for office coffee
-    {
-      amount: 425.0, // Amount user3 owes to user2
-      note: "Office coffee",
-      date: now - 1 * 24 * 60 * 60 * 1000,
-      paidByUserId: user3._id, // User3 pays
-      receivedByUserId: user2._id, // User2 receives
-      groupId: groups[1]._id, // Office Expenses Group
-      relatedExpenseIds: coffeeExpense ? [coffeeExpense._id] : undefined,
-      createdBy: user3._id,
     },
   ];
 
@@ -448,7 +361,6 @@ async function createSettlements(
     settlementIds.push(settlementId);
   }
 
-  // Fetch all settlements with their IDs
   return await Promise.all(
     settlementIds.map(async (id) => {
       const settlement = await ctx.db.get(id);
