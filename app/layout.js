@@ -15,10 +15,13 @@ export const metadata = {
 
 import Footer from "@/components/footer";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+
       <head>
         <link rel="icon" type="image/png" href="/logos/Logo1.png" />
       </head>
@@ -28,13 +31,21 @@ export default function RootLayout({ children }) {
       >
         <ClerkProvider>
           <ConvexClientProvider>
-            <Header />
-            <main className="min-h-screen">
-              {children}
-              <Toaster richColors /> 
-            </main>
-            <Footer />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Header />
+              <main className="min-h-screen">
+                {children}
+                <Toaster richColors /> 
+              </main>
+              <Footer />
+            </ThemeProvider>
           </ConvexClientProvider>
+
         </ClerkProvider>
       </body>
     </html>

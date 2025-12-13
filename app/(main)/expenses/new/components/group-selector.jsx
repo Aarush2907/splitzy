@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
-import { BarLoader } from "react-spinners";
-import { Users } from "lucide-react";
+import { Users, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -13,8 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function GroupSelector({ onChange }) {
-  const [selectedGroupId, setSelectedGroupId] = useState("");
+export function GroupSelector({ onChange, value, disabled }) {
+  const [selectedGroupId, setSelectedGroupId] = useState(value || "");
+  const [prevValue, setPrevValue] = useState(value);
+
+  // Sync state with prop if it changes (avoiding useEffect to prevent cascade)
+  if (value !== undefined && value !== prevValue) {
+    setPrevValue(value);
+    setSelectedGroupId(value);
+  }
 
   // Single query to get all data we need
   const { data, isLoading } = useConvexQuery(
@@ -34,7 +40,11 @@ export function GroupSelector({ onChange }) {
   };
 
   if (isLoading) {
-    return <BarLoader width={"100%"} color="#36d7b7" />;
+    return (
+      <div className="flex justify-center py-2">
+        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+      </div>
+    );
   }
 
   if (!data?.groups || data.groups.length === 0) {
@@ -47,7 +57,7 @@ export function GroupSelector({ onChange }) {
 
   return (
     <div>
-      <Select value={selectedGroupId} onValueChange={handleGroupChange}>
+      <Select value={selectedGroupId} onValueChange={handleGroupChange} disabled={disabled}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a group" />
         </SelectTrigger>
@@ -69,8 +79,8 @@ export function GroupSelector({ onChange }) {
       </Select>
 
       {isLoading && selectedGroupId && (
-        <div className="mt-2">
-          <BarLoader width={"100%"} color="#36d7b7" />
+        <div className="mt-2 flex justify-center">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
         </div>
       )}
     </div>

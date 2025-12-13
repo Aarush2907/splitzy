@@ -94,33 +94,34 @@ export function ExpenseSummary({ monthlySpending, totalSpent }) {
         <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="oklch(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.4} />
               <XAxis 
                 dataKey="name" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fill: 'oklch(var(--muted-foreground))', fontSize: 12 }} 
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} 
                 dy={10}
               />
               <YAxis 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fill: 'oklch(var(--muted-foreground))', fontSize: 12 }}
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                 tickFormatter={(value) => `₹${value}`}
               />
               <Tooltip
-                cursor={{ fill: 'oklch(var(--muted))', opacity: 0.3 }}
+                cursor={{ fill: 'var(--muted)', opacity: 0.2 }}
                 contentStyle={{ 
                     borderRadius: '12px', 
-                    border: '1px solid oklch(var(--border))',
-                    backgroundColor: 'oklch(var(--popover))',
+                    border: '1px solid var(--border)',
+                    backgroundColor: 'var(--popover)',
+                    color: 'var(--popover-foreground)',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
                 }}
                 formatter={(value) => [`₹${value.toFixed(2)}`, "Spending"]}
               />
               <Bar 
                 dataKey="amount" 
-                fill="oklch(var(--primary))" 
+                fill="var(--primary)" 
                 radius={[6, 6, 0, 0]} 
                 barSize={32}
                 animationDuration={1500}

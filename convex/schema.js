@@ -61,4 +61,19 @@ export default defineSchema({
     .index("by_user_and_group",["paidByUserId","groupId"]) 
     .index("by_receiver_and_group",["receivedByUserId","groupId"]) 
     .index("by_date",["date"]),
+
+    invites: defineTable({
+        token: v.string(), // Unique token for links
+        code: v.optional(v.string()), // Short code for manual entry
+        type: v.string(), // "group" or "friend"
+        targetId: v.string(), // ID of the group or user (stored as string to be flexible)
+        createdBy: v.id("users"),
+        expiresAt: v.optional(v.number()),
+        maxUses: v.optional(v.number()),
+        usageCount: v.number(),
+        status: v.string(), // "active", "expired", "revoked"
+    })
+    .index("by_token", ["token"])
+    .index("by_code", ["code"])
+    .index("by_target", ["targetId", "status"]),
 });

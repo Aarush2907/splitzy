@@ -42,7 +42,7 @@ const expenseSchema = z.object({
   groupId: z.string().optional(),
 });
 
-export function ExpenseForm({ type = "individual", onSuccess }) {
+export function ExpenseForm({ type = "individual", onSuccess, initialGroupId, initialPersonId }) {
   const [participants, setParticipants] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -50,6 +50,10 @@ export function ExpenseForm({ type = "individual", onSuccess }) {
 
   // Mutations and queries
   const { data: currentUser } = useConvexQuery(api.users.getCurrentUser);
+  const { data: initialPerson } = useConvexQuery(
+    api.users.getUser, 
+    initialPersonId ? { userId: initialPersonId } : "skip"
+  );
 
   const createExpense = useConvexMutation(api.expenses.createExpense);
   const categories = getAllCategories();
@@ -71,7 +75,7 @@ export function ExpenseForm({ type = "individual", onSuccess }) {
       date: new Date(),
       paidByUserId: currentUser?._id || "",
       splitType: "equal",
-      groupId: undefined,
+      groupId: initialGroupId || undefined,
     },
   });
 
@@ -93,6 +97,23 @@ export function ExpenseForm({ type = "individual", onSuccess }) {
       ]);
     }
   }, [currentUser, participants]);
+
+  // Handle initial person
+  useEffect(() => {
+    if (initialPerson && currentUser) {
+      setParticipants((prev) => {
+        if (prev.some((p) => p.id === initialPerson.id)) return prev;
+        return [...prev, initialPerson];
+      });
+    }
+  }, [initialPerson, currentUser]);
+
+  // Handle initial group
+  useEffect(() => {
+    if (initialGroupId) {
+      setValue("groupId", initialGroupId);
+    }
+  }, [initialGroupId, setValue]);
 
   // Handle form submission
   const onSubmit = async (data) => {
@@ -240,6 +261,8 @@ export function ExpenseForm({ type = "individual", onSuccess }) {
           <div className="space-y-2">
             <Label>Group</Label>
             <GroupSelector
+              value={initialGroupId}
+              disabled={!!initialGroupId}
               onChange={(group) => {
                 // Only update if the group has changed to prevent loops
                 if (!selectedGroup || selectedGroup.id !== group.id) {
@@ -254,7 +277,7 @@ export function ExpenseForm({ type = "individual", onSuccess }) {
                 }
               }}
             />
-            {!selectedGroup && (
+            {!selectedGroup && !initialGroupId && (
               <p className="text-xs text-amber-600">
                 Please select a group to continue
               </p>

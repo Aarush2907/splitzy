@@ -17,7 +17,7 @@ export default function Home() {
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-4 overflow-hidden">
         <div className="container mx-auto text-center relative z-10">
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 border border-indigo-100 shadow-sm mb-8 animate-fade-in-up backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 border border-indigo-100 shadow-sm mb-8 animate-fade-in-up backdrop-blur-sm dark:bg-black/50 border-white/10 ">
             <Badge variant="secondary" className="bg-secondary/10 text-secondary hover:bg-secondary/20 border-none px-3">New</Badge>
             <span className="text-sm font-medium text-gray-600">The smartest way to track expenses in India 🇮🇳</span>
           </div>
@@ -52,8 +52,8 @@ export default function Home() {
                 <IndianRupee className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500 font-medium">You received</p>
-                <p className="text-sm font-bold text-gray-900">₹ 1,250.00</p>
+                <p className="text-xs text-gray-500 font-medium dark:text-white/70">You received</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">₹ 1,250.00</p>
               </div>
             </div>
           </div>
@@ -64,8 +64,8 @@ export default function Home() {
                 <Users className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500 font-medium">Goa Trip</p>
-                <p className="text-sm font-bold text-gray-900">You owe ₹ 450</p>
+                <p className="text-xs text-gray-500 font-medium dark:text-white/70">Goa Trip</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">You owe ₹ 450</p>
               </div>
             </div>
           </div>
@@ -78,20 +78,20 @@ export default function Home() {
       </section>
 
       {/* Stats / Social Proof */}
-      <section className="py-10 border-y border-gray-100 bg-white/50 backdrop-blur-sm">
+      <section className="py-10 border-y border-gray-900/10 bg-gray-900/5 dark:bg-gray-900/20 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 text-center">
             <div className="flex flex-col items-center">
-              <span className="text-3xl font-bold text-gray-900">10k+</span>
-              <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">Active Users</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">10k+</span>
+              <span className="text-sm text-gray-700 dark:text-gray-400 font-medium uppercase tracking-wider">Active Users</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl font-bold text-gray-900">₹5Cr+</span>
-              <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">Expenses Tracked</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">₹5Cr+</span>
+              <span className="text-sm text-gray-700 dark:text-gray-400 font-medium uppercase tracking-wider">Expenses Tracked</span>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-3xl font-bold text-gray-900">4.9/5</span>
-              <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">User Rating</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">4.9/5</span>
+              <span className="text-sm text-gray-700 dark:text-gray-400 font-medium uppercase tracking-wider">User Rating</span>
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-20">
             <Badge variant="outline" className="mb-4 border-primary/20 text-primary bg-primary/5">Features</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-gray-100 leading-tight ">
               Everything you need to <br/> split <span className="text-primary">fair & square</span>
             </h2>
             <p className="text-gray-500 text-xl max-w-2xl mx-auto">
@@ -134,20 +134,20 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-32 bg-gray-50/50 relative overflow-hidden">
+      <section id="how-it-works" className="py-32 bg-gray-900/5 dark:bg-gray-900/20 relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative z-10">
            <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               How Splitzy Works
             </h2>
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-700 dark:text-gray-400 text-lg max-w-2xl mx-auto">
               Get started in minutes. It&apos;s as easy as 1-2-3.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
              {/* Connecting Line (Desktop Only) */}
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gray-200 -z-10 border-t-2 border-dashed border-gray-300" />
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gray-900/20 dark:bg-gray-700/50 -z-10 border-t-2 border-dashed border-gray-900/20 dark:border-gray-700/50" />
 
             <Step 
               number="1"
@@ -193,23 +193,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-white border-t border-gray-100">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">S</div>
-            <span className="text-xl font-bold text-gray-900">Splitzy</span>
-          </div>
-          <div className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} Splitzy. Made with ❤️ in India.
-          </div>
-          <div className="flex gap-6">
-            <Link href="#" className="text-gray-400 hover:text-primary transition-colors">Privacy</Link>
-            <Link href="#" className="text-gray-400 hover:text-primary transition-colors">Terms</Link>
-            <Link href="#" className="text-gray-400 hover:text-primary transition-colors">Contact</Link>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
@@ -229,12 +213,12 @@ function FeatureCard({ icon, iconBg, title, description }) {
 function Step({ number, title, description }) {
   return (
     <div className="flex flex-col items-center text-center relative p-4">
-      <div className="w-12 h-12 rounded-full bg-white border-4 border-indigo-50 text-primary flex items-center justify-center text-xl font-bold mb-6 shadow-sm z-10 relative">
+      <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border-4 border-indigo-50 dark:border-gray-700 text-primary flex items-center justify-center text-xl font-bold mb-6 shadow-sm z-10 relative">
         {number}
         <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-20" />
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-      <p className="text-gray-500 leading-relaxed">{description}</p>
+      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">{title}</h3>
+      <p className="text-gray-700 dark:text-gray-400 leading-relaxed">{description}</p>
     </div>
   );
 }

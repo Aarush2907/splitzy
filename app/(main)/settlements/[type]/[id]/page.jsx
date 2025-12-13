@@ -3,11 +3,11 @@
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
-import { BarLoader } from "react-spinners";
+import { ArrowLeft, Users, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users } from "lucide-react";
+
 import SettlementForm from "./components/settlement-form";
 
 export default function SettlementPage() {
@@ -26,7 +26,9 @@ export default function SettlementPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto py-12">
-        <BarLoader width={"100%"} color="#36d7b7" />
+        <div className="flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
       </div>
     );
   }

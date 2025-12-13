@@ -5,12 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
-import { BarLoader } from "react-spinners";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, Users, User, ChevronRight } from "lucide-react";
+import { Plus, Users, User, ChevronRight, Loader2 } from "lucide-react";
 import { CreateGroupModal } from "./_components/create-group-modal";
+import { JoinGroupModal } from "./_components/join-group-modal";
 
 export default function ContactsPage() {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function ContactsPage() {
     }
     return false;
   });
+  const [isJoinGroupModalOpen, setIsJoinGroupModalOpen] = useState(false);
 
   const { data, isLoading } = useConvexQuery(api.contacts.getAllContacts);
 
@@ -40,8 +41,8 @@ export default function ContactsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-12">
-        <BarLoader width={"100%"} color="#36d7b7" />
+      <div className="container mx-auto py-12 flex justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -55,10 +56,16 @@ export default function ContactsPage() {
           <h1 className="text-4xl font-bold gradient-title leading-tight">Contacts</h1>
           <p className="text-muted-foreground mt-1">Manage your friends and expense groups</p>
         </div>
-        <Button onClick={() => setIsCreateGroupModalOpen(true)} size="lg" className="shadow-lg hover:shadow-xl transition-all">
-          <Plus className="mr-2 h-4 w-4" />
-          Create Group
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setIsJoinGroupModalOpen(true)} variant="outline" size="lg" className="shadow-sm hover:shadow-md transition-all">
+            <Users className="mr-2 h-4 w-4" />
+            Join Group
+          </Button>
+          <Button onClick={() => setIsCreateGroupModalOpen(true)} size="lg" className="shadow-lg hover:shadow-xl transition-all">
+            <Plus className="mr-2 h-4 w-4" />
+            Create Group
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -164,6 +171,10 @@ export default function ContactsPage() {
         onSuccess={(groupId) => {
           router.push(`/group/${groupId}`);
         }}
+      />
+      <JoinGroupModal
+        isOpen={isJoinGroupModalOpen}
+        onClose={() => setIsJoinGroupModalOpen(false)}
       />
     </div>
   );

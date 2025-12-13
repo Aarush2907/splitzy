@@ -11,16 +11,20 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { useStoreUser } from "@/hooks/use-store-users";
-import BarLoader from "react-spinners/BarLoader";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { Unauthenticated, Authenticated } from "convex/react";
 import { Button } from "./ui/button";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, Users, Sun, Moon } from "lucide-react";
+
+
 
 const Header = () => {
   const { isLoading } = useStoreUser();
   const path = usePathname();
+  const { theme, setTheme } = useTheme();
+
 
   return (
     <header className="fixed top-0 w-full border-b border-white/20 bg-white/80 backdrop-blur-md z-50 supports-[backdrop-filter]:bg-white/60 dark:bg-black/50 dark:border-white/10">
@@ -43,8 +47,29 @@ const Header = () => {
         )}
 
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="mr-2"
+          >
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+
           <Authenticated>
+            <Link href="/contacts">
+              <Button 
+                variant="ghost" 
+                className="hidden md:inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mr-2"
+              >
+                <Users className="h-4 w-4" />
+                Contacts
+              </Button>
+            </Link>
             <Link href="/dashboard">
+
               <Button 
                 variant="outline"
                 className="hidden md:inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary/5 hover:text-primary hover:border-primary/50 transition-all"
@@ -57,6 +82,13 @@ const Header = () => {
                 <LayoutDashboard className="h-4 w-4" />
               </Button>
             </Link>
+            
+            <Link href="/contacts" className="md:hidden">
+              <Button variant="ghost" className="w-10 h-10 p-0 text-muted-foreground">
+                <Users className="h-4 w-4" />
+              </Button>
+            </Link>
+
             <UserButton 
               appearance={{
                 elements: {
@@ -79,7 +111,7 @@ const Header = () => {
         </div>
       </nav>
 
-      {isLoading && <BarLoader width={"100%"} color="#4f46e5" />}
+
     </header>
   );
 };

@@ -5,12 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
-import { BarLoader } from "react-spinners";
+import { Plus, ArrowLeftRight, ArrowLeft, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, ArrowLeftRight, ArrowLeft } from "lucide-react";
+
 import { ExpenseList } from "@/components/expense-list";
 import { SettlementList } from "@/components/settlement-list";
 
@@ -27,7 +27,7 @@ export default function PersonExpensesPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto py-12 flex items-center justify-center">
-        <BarLoader width={"150px"} color="var(--primary)" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -75,7 +75,7 @@ export default function PersonExpensesPage() {
               </Link>
             </Button>
             <Button asChild className="flex-1 sm:flex-none shadow-lg shadow-primary/20">
-              <Link href={`/expenses/new`}>
+              <Link href={`/expenses/new?personId=${params.id}`}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add expense
               </Link>

@@ -5,34 +5,41 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
-import { BarLoader } from "react-spinners";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, ArrowLeftRight, ArrowLeft, Users, Settings } from "lucide-react";
+import { Plus, ArrowLeftRight, ArrowLeft, Users, Settings, UserPlus } from "lucide-react";
 import { ExpenseList } from "@/components/expense-list";
 import { SettlementList } from "@/components/settlement-list";
 import { GroupBalances } from "@/components/group-balances";
 import { GroupMembers } from "@/components/group-members";
+import { InviteModal } from "./_components/invite-modal";
+import { GroupSettingsModal } from "./_components/group-settings-modal";
 
 export default function GroupExpensesPage() {
   const params = useParams();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("expenses");
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const { data, isLoading } = useConvexQuery(api.groups.getGroupExpenses, {
     groupId: params.id,
   });
 
-  if (isLoading) {
+  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser);
+
+  if (isLoading || !currentUser) {
     return (
       <div className="container mx-auto py-12 flex items-center justify-center">
-        <BarLoader width={"150px"} color="var(--primary)" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  const group = data?.group;
+  if (!data) return null;
+  const group = data.group;
   const members = data?.members || [];
   const expenses = data?.expenses || [];
   const settlements = data?.settlements || [];
@@ -90,12 +97,26 @@ export default function GroupExpensesPage() {
               </Link>
             </Button>
             <Button asChild className="flex-1 sm:flex-none shadow-lg shadow-primary/20">
-              <Link href={`/expenses/new`}>
+              <Link href={`/expenses/new?groupId=${params.id}`}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add expense
               </Link>
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="text-muted-foreground hover:text-primary border-primary/20"
+              onClick={() => setIsInviteModalOpen(true)}
+              title="Invite Members"
+            >
+               <UserPlus className="h-5 w-5" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground"
+              onClick={() => setIsSettingsModalOpen(true)}
+            >
                <Settings className="h-5 w-5" />
             </Button>
           </div>
@@ -168,6 +189,21 @@ export default function GroupExpensesPage() {
           </Tabs>
         </div>
       </div>
+
+      <InviteModal 
+        isOpen={isInviteModalOpen} 
+        onClose={() => setIsInviteModalOpen(false)} 
+        groupId={params.id} 
+        groupName={group?.name} 
+      />
+      
+      <GroupSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        group={group}
+        members={members}
+        currentUserId={currentUser?._id}
+      />
     </div>
   );
 }

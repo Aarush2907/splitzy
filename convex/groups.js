@@ -1,6 +1,6 @@
-import { query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
+import { internal, api } from "./_generated/api";
 
 export const getGroupOrMembers = query({
   args: {
@@ -8,7 +8,7 @@ export const getGroupOrMembers = query({
   },
   handler: async (ctx, args) => {
     // Use centralized getCurrentUser function
-    const currentUser = await ctx.runQuery(internal.users.getCurrentUser);
+    const currentUser = await ctx.runQuery(api.users.getCurrentUser);
 
     // Get all groups where the user is a member
     const allGroups = await ctx.db.query("groups").collect();
@@ -81,13 +81,13 @@ export const getGroupExpenses = query({
   args: { groupId: v.id("groups") },
   handler: async (ctx, { groupId }) => {
     // Use centralized getCurrentUser function
-    const currentUser = await ctx.runQuery(internal.users.getCurrentUser);
+    const currentUser = await ctx.runQuery(api.users.getCurrentUser);
 
     const group = await ctx.db.get(groupId);
-    if (!group) throw new Error("Group not found");
+    if (!group) return null; // Group not found (e.g., deleted), return null gracefully
 
     if (!group.members.some((m) => m.userId === currentUser._id))
-      throw new Error("You are not a member of this group");
+      return null;
 
     const expenses = await ctx.db
       .query("expenses")
@@ -182,6 +182,7 @@ export const getGroupExpenses = query({
         id: group._id,
         name: group.name,
         description: group.description,
+        createdBy: group.createdBy,
       },
       members: memberDetails,
       expenses,
@@ -189,5 +190,92 @@ export const getGroupExpenses = query({
       balances,
       userLookupMap,
     };
+  },
+});
+
+// Delete a group (Admin only)
+export const deleteGroup = mutation({
+  args: { groupId: v.id("groups") },
+  handler: async (ctx, { groupId }) => {
+    const user = await ctx.runQuery(api.users.getCurrentUser);
+    const group = await ctx.db.get(groupId);
+    
+    if (!group) throw new Error("Group not found");
+    if (group.createdBy !== user._id) throw new Error("Only the admin can delete the group");
+
+    // Delete all related data
+    const expenses = await ctx.db
+      .query("expenses")
+      .withIndex("by_group", (q) => q.eq("groupId", groupId))
+      .collect();
+    
+    for (const expense of expenses) {
+      await ctx.db.delete(expense._id);
+    }
+
+    const settlements = await ctx.db
+      .query("settlements")
+      .filter((q) => q.eq(q.field("groupId"), groupId))
+      .collect();
+
+    for (const settlement of settlements) {
+      await ctx.db.delete(settlement._id);
+    }
+
+    // Delete invites
+    const invites = await ctx.db
+      .query("invites")
+      .withIndex("by_target", (q) => q.eq("targetId", groupId))
+      .collect();
+    
+    for (const invite of invites) {
+      await ctx.db.delete(invite._id);
+    }
+
+    // Delete group
+    await ctx.db.delete(groupId);
+  },
+});
+
+// Remove a member (Admin only)
+export const removeMember = mutation({
+  args: { groupId: v.id("groups"), userId: v.id("users") },
+  handler: async (ctx, { groupId, userId }) => {
+    const currentUser = await ctx.runQuery(api.users.getCurrentUser);
+    const group = await ctx.db.get(groupId);
+    
+    if (!group) throw new Error("Group not found");
+    if (group.createdBy !== currentUser._id) throw new Error("Only the admin can remove members");
+    if (userId === group.createdBy) throw new Error("Cannot remove the admin");
+
+    const newMembers = group.members.filter((m) => m.userId !== userId);
+    await ctx.db.patch(groupId, { members: newMembers });
+  },
+});
+
+// Leave a group
+export const leaveGroup = mutation({
+  args: { groupId: v.id("groups") },
+  handler: async (ctx, { groupId }) => {
+    const currentUser = await ctx.runQuery(api.users.getCurrentUser);
+    const group = await ctx.db.get(groupId);
+    
+    if (!group) throw new Error("Group not found");
+    
+    if (group.createdBy === currentUser._id) {
+       // If admin leaves, for now we prevent it or delete group if they are the only one?
+       // User requirement: "regular members should only have the option to leave".
+       // Admin has "delete group". So admin shouldn't "leave" via this button usually.
+       // But if they do, let's block it and say "Admins must delete the group or transfer ownership" (transfer not impl).
+       // Or just allow it if they are the only one, which deletes the group.
+       if (group.members.length === 1) {
+         await ctx.db.delete(groupId);
+         return;
+       }
+       throw new Error("Admins cannot leave the group. You must delete the group.");
+    }
+
+    const newMembers = group.members.filter((m) => m.userId !== currentUser._id);
+    await ctx.db.patch(groupId, { members: newMembers });
   },
 });

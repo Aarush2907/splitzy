@@ -2,7 +2,7 @@
 
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
-import { BarLoader } from "react-spinners";
+
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Wallet, ChevronRight, TrendingUp } from "lucide-react";
+import { Plus, Users, Wallet, ChevronRight, TrendingUp, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { ExpenseSummary } from "./components/expense-summary";
 import { BalanceSummary } from "./components/balance-summary";
@@ -43,7 +43,7 @@ export default function Dashboard() {
     <div className="container max-w-5xl mx-auto py-6 space-y-8 pb-24">
       {isLoading ? (
         <div className="w-full h-[60vh] flex flex-col items-center justify-center gap-4">
-          <BarLoader width={"150px"} color="var(--primary)" />
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
           <p className="text-muted-foreground animate-pulse">Loading your happiness...</p>
         </div>
       ) : (
