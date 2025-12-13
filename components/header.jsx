@@ -40,8 +40,8 @@ const Header = () => {
         </Link>
 
         {path === '/' && (
-          <div className="hidden md:flex items-center gap-8">
-            <Link href='#features' className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Features</Link>
+          <div className="hidden md:flex items-center  gap-8">
+            <Link href='#features' className="text-sm font-medium text-gray-600 hover:text-primary transition-colors ">Features</Link>
             <Link href='#how-it-works' className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">How it works</Link>
           </div>
         )}
